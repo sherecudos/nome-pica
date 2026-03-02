@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Busca de Endereço</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+        h2 {
+            text-align: center;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+        }
+        .result p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Buscar Endereço pelo CEP</h2>
+        <input type="text" id="cep" placeholder="Digite o CEP" maxlength="9">
+        <button onclick="buscarEndereco()">Buscar</button>
+
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        function buscarEndereco() {
+            const cep = document.getElementById('cep').value.replace('-', '').trim();
+            const resultDiv = document.getElementById('result');
+            
+            if (!cep || cep.length !== 8) {
+                resultDiv.innerHTML = '<p style="color: red;">Por favor, insira um CEP válido.</p>';
+                return;
+            }
+            
+            // URL da API do ViaCEP
+            const url = `https://viacep.com.br/ws/${cep}/json/`;
+
+            // Fazendo a requisição para a API
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.erro) {
+                        resultDiv.innerHTML = '<p style="color: red;">CEP não encontrado.</p>';
+                    } else {
+                        resultDiv.innerHTML = `
+                            <p><strong>Logradouro:</strong> ${data.logradouro}</p>
+                            <p><strong>Bairro:</strong> ${data.bairro}</p>
+                            <p><strong>Cidade:</strong> ${data.localidade}</p>
+                            <p><strong>Estado:</strong> ${data.uf}</p>
+                            <p><strong>CEP:</strong> ${data.cep}</p>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = '<p style="color: red;">Ocorreu um erro. Tente novamente.</p>';
+                });
+        }
+    </script>
+</body>
+</html>
